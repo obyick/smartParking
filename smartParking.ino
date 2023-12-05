@@ -23,6 +23,7 @@ void initUSART1() {
 // Function to initialize output pin configuration
 void initIO() {
   DDRB |= (1 << DDB7);
+  DDRB |= (1 << DDB6);
 }
 
 // Function to make the LED blink at a specific frequency
@@ -35,21 +36,24 @@ void blinkLED(int freq) {
 
 // Function to update the LED state based on the measured distance
 void updateLEDState(int distance) {
-  if (distance < 10 || (millis() - lastDistanceChangeTime >= 10000 && distance < 390)) {
+  if (distance < 10 || (millis() - lastDistanceChangeTime >= 10000 && distance < 130)) {
+    PORTB &= ~(1 << PORTB6);
     PORTB |= (1 << PORTB7);
     delay(1000);
   } else {
-    // Selects blink frequency based on the measured distance
-    if (distance < 50) {
+    PORTB &= ~(1 << PORTB6);
+    // Seleciona a frequência do piscar com base na distância medida
+    if (distance < 40) {
       blinkLED(100);
-    } else if (distance < 150) {
+    } else if (distance < 70) {
       blinkLED(200);
-    } else if (distance < 300) {
+    } else if (distance < 100) {
       blinkLED(300);
-    } else if (distance < 390) {
+    } else if (distance < 130) {
       blinkLED(400);
     } else {
       PORTB &= ~(1 << PORTB7);
+      PORTB |= (1 << PORTB6);
       delay(1000);
     }
   }
@@ -87,14 +91,14 @@ void loop() {
   updateLEDState(distance);
 
   // Prints information about the distance
-  if (millis() - lastDistanceChangeTime <= 10000 && distance < 390) {
+  if (millis() - lastDistanceChangeTime <= 10000 && distance < 130) {
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.print("cm / ");
   }
 
   // Prints information about the duration
-  if (distance < 390) {
+  if (distance < 130) {
     Serial.print("Duration: ");
     Serial.print((millis() - lastDistanceChangeTime) / 1000);
     Serial.println("s");
