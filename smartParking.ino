@@ -52,6 +52,7 @@ void updateLEDState(int distance) {
     } else if (distance < 130) {
       blinkLED(400);
     } else {
+      lastDistanceChangeTime = 0;
       PORTB &= ~(1 << PORTB7);
       PORTB |= (1 << PORTB6);
       delay(1000);
