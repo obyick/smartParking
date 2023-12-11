@@ -1,10 +1,14 @@
-// Global variables to store the last measured distance and the time of the last distance change
+// Global variables to store the last measured distance
 int lastDistance = 0;
+
+// Global variables to store the time of the last distance change
 unsigned long lastDistanceChangeTime = 0;
+
+// Calculates the prescaler value to achieve a baud rate of 9600 bps
+const int BAUD_PRESCALE = (F_CPU / (9600 * 16UL)) - 1;
 
 // Function to initialize USART0 serial communication
 void initUSART0() {
-  const int BAUD_PRESCALE = (F_CPU / (9600 * 16UL)) - 1;
   UBRR0H = (BAUD_PRESCALE >> 8);
   UBRR0L = BAUD_PRESCALE;
   UCSR0B = (1 << TXEN0) | (1 << RXEN0);
@@ -13,7 +17,6 @@ void initUSART0() {
 
 // Function to initialize USART1 serial communication
 void initUSART1() {
-  const int BAUD_PRESCALE = (F_CPU / (9600 * 16UL)) - 1;
   UBRR1H = (BAUD_PRESCALE >> 8);
   UBRR1L = BAUD_PRESCALE;
   UCSR1B = (1 << TXEN1) | (1 << RXEN1);
@@ -91,14 +94,14 @@ void loop() {
   // Updates the LED state based on the measured distance
   updateLEDState(distance);
 
-  // Prints information about the distance
+  // Transmitting information about the distance
   if (millis() - lastDistanceChangeTime <= 10000 && distance < 130) {
     Serial.print("Distance: ");
     Serial.print(distance);
     Serial.print("cm / ");
   }
 
-  // Prints information about the duration
+  // Transmitting information about the duration
   if (distance < 130) {
     Serial.print("Duration: ");
     Serial.print((millis() - lastDistanceChangeTime) / 1000);
